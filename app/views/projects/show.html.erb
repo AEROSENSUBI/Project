@@ -1,0 +1,35 @@
+<h1><%= @project.name %></h1>
+<p>Status: <%= @project.status %></p>
+
+<h2>Change Status</h2>
+<%= form_with url: update_status_project_path(@project), method: :patch, local: true do |form| %>
+  <%= form.label :status, "Update Project Status:" %>
+  <%= form.select :status, Project.statuses.keys.map { |status| [status.humanize, status] }, selected: @project.status %>
+  <%= form.submit "Update" %>
+<% end %>
+
+<h2>Add a Comment</h2>
+<%= form_with url: project_comments_path(@project), method: :post, local: true do |form| %>
+  <%= form.label :content, "Your Comment:" %>
+  <%= form.text_area :content %>
+  <%= form.submit "Post Comment" %>
+<% end %>
+
+<h2>Comments</h2>
+<ul>
+  <% @comments.each do |comment| %>
+    <li><%= comment.content %> - <%= comment.user.email %> (<%= comment.created_at %>)
+      <% if comment.user == current_user %>
+        <%= link_to "Delete", project_comment_path(@project, comment), method: :delete, data: { confirm: "Are you sure?" } %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+
+<h2>Status Changes</h2>
+<ul>
+  <% @status_changes.each do |status_change| %>
+    <li>Changed to <%= status_change.status %> by <%= status_change.user.email %> on <%= status_change.created_at %></li>
+  <% end %>
+</ul>
+
